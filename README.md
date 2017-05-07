@@ -1,6 +1,7 @@
 - [x] Display a list of posts
 - [x] Create a new post with add button
-- [ ] Split post code into a new module
+- [x] Split post code into a new module
+- [x] Disable button if post is invalid
 - [ ] Create a new post with enter key
 - [ ] Post should contain meta - created time, id etc.
 - [ ] Delete a post

@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (Html, button, div, text, input)
-import Html.Attributes exposing (class, placeholder, value)
+import Html.Attributes exposing (class, placeholder, value, disabled)
 import Html.Events exposing (onClick, onInput)
 import Post exposing (..)
 
@@ -43,7 +43,7 @@ update msg model =
 
         AddPost ->
             { model
-                | posts = model.posts ++ [ createPost model.newPostText (model.maxId + 1) ]
+                | posts = model.posts ++ [ createPost (String.trim model.newPostText) (model.maxId + 1) ]
                 , newPostText = ""
                 , maxId = model.maxId + 1
             }
@@ -59,5 +59,14 @@ view model =
             , value model.newPostText
             ]
             []
-        , button [ onClick AddPost ] [ text "Add" ]
+        , button
+            [ onClick AddPost
+            , disabled (not <| isNewPostValid model)
+            ]
+            [ text "Add" ]
         ]
+
+
+isNewPostValid : Model -> Bool
+isNewPostValid model =
+    String.length (String.trim model.newPostText) > 0

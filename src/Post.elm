@@ -21,6 +21,6 @@ showPost : Post -> Html msg
 showPost post =
     div
         [ class "post"
-        , id ("post-" ++ (toString post.id))
+        , id <| "post-" ++ toString post.id
         ]
         [ text post.content ]
