@@ -2,7 +2,8 @@
 - [x] Create a new post with add button
 - [x] Split post code into a new module
 - [x] Disable button if post is invalid
-- [ ] Create a new post with enter key
+- [x] Create a new post with enter key
+- [ ] Style the posts
 - [ ] Post should contain meta - created time, id etc.
 - [ ] Delete a post
 - [ ] Edit a post (and add updated time to post details)

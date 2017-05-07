@@ -1,8 +1,9 @@
 module Main exposing (..)
 
-import Html exposing (Html, button, div, text, input)
+import Html exposing (Html, button, div, text, input, Attribute)
 import Html.Attributes exposing (class, placeholder, value, disabled)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, on, keyCode)
+import Json.Decode as Json
 import Post exposing (..)
 
 
@@ -25,13 +26,20 @@ type alias Model =
 type Msg
     = AddPost
     | NewPostText String
+    | KeyDown Int
 
 
 model : Model
 model =
-    { posts = []
-    , newPostText = ""
-    , maxId = 0
+    Model [] "" 0
+
+
+pushPost : Model -> Model
+pushPost model =
+    { model
+        | posts = model.posts ++ [ createPost (String.trim model.newPostText) (model.maxId + 1) ]
+        , newPostText = ""
+        , maxId = model.maxId + 1
     }
 
 
@@ -42,31 +50,38 @@ update msg model =
             { model | newPostText = text }
 
         AddPost ->
-            { model
-                | posts = model.posts ++ [ createPost (String.trim model.newPostText) (model.maxId + 1) ]
-                , newPostText = ""
-                , maxId = model.maxId + 1
-            }
+            pushPost model
+
+        KeyDown keyCode ->
+            if keyCode == 13 then
+                pushPost model
+            else
+                model
 
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ div [ class "post-list" ] (List.map showPost model.posts)
-        , input
-            [ placeholder "Enter some text"
-            , onInput NewPostText
-            , value model.newPostText
+    let
+        isNewPostInvalid =
+            String.length (String.trim model.newPostText) == 0
+    in
+        div []
+            [ div [ class "post-list" ] (List.map showPost model.posts)
+            , input
+                [ placeholder "Enter some text"
+                , onInput NewPostText
+                , onKeyDown KeyDown
+                , value model.newPostText
+                ]
+                []
+            , button
+                [ onClick AddPost
+                , disabled isNewPostInvalid
+                ]
+                [ text "Add" ]
             ]
-            []
-        , button
-            [ onClick AddPost
-            , disabled (not <| isNewPostValid model)
-            ]
-            [ text "Add" ]
-        ]
 
 
-isNewPostValid : Model -> Bool
-isNewPostValid model =
-    String.length (String.trim model.newPostText) > 0
+onKeyDown : (Int -> msg) -> Attribute msg
+onKeyDown tagger =
+    on "keydown" (Json.map tagger keyCode)
